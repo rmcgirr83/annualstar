@@ -91,7 +91,7 @@ class listener implements EventSubscriberInterface
 			$this->reg_years = $reg_years;
 			$reg_output = sprintf($this->user->lang['YEAR_OF_MEMBERSHIP'], $reg_years);
 
-			if($reg_years > 1)
+			if ($reg_years > 1)
 			{
 				$reg_output = sprintf($this->user->lang['YEARS_OF_MEMBERSHIP'], $reg_years);
 			}
@@ -110,12 +110,12 @@ class listener implements EventSubscriberInterface
 			$star_color = 'style="color:#27408B;"';
 			$year_color = 'style="color:white;"';
 		}
-		elseif ($this->reg_years >= 10)
+		else if ($this->reg_years >= 10)
 		{
 			$star_color = 'style="color:#3A5FCD;"';
 			$year_color = 'style="color:white;"';
 		}
-		elseif ($this->reg_years >= 5)
+		else if ($this->reg_years >= 5)
 		{
 			$star_color = 'style="color:#4876FF;"';
 			$year_color = 'style="color:white;"';
