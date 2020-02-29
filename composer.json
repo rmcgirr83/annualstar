@@ -1,0 +1,24 @@
+{
+	"name": "rmcgirr83/annualstar",
+	"type": "phpbb-extension",
+	"description": "Displays a star with number of years of membership",
+	"homepage": "https://github.com/rmcgirr83/annualstar",
+	"version": "1.0.0",
+	"time": "2020-02-29",
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "Rich McGirr",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=7.1"
+	},
+	"extra": {
+		"display-name": "Annual Star",
+		"soft-require": {
+            "phpbb/phpbb": ">=3.2"
+        }
+	}
+}
