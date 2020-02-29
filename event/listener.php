@@ -19,13 +19,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class listener implements EventSubscriberInterface
 {
 	private $reg_years = 0;
-	
+
 	/** @var \phpbb\template\template */
 	protected $template;
 
 	/** @var \phpbb\user */
 	protected $user;
-	
+
 
 	static public function getSubscribedEvents()
 	{
@@ -57,7 +57,7 @@ class listener implements EventSubscriberInterface
 		$array['annual_stars'] = $star;
 		$event['user_cache_data'] = $array;
 	}
-	
+
 	public function viewtopic_cache_user_data($event)
 	{
 		$array = $event['user_cache_data'];
@@ -94,7 +94,7 @@ class listener implements EventSubscriberInterface
 			if($reg_years > 1)
 			{
 				$reg_output = sprintf($this->user->lang['YEARS_OF_MEMBERSHIP'], $reg_years);
-			}			
+			}
 			$star = $this->generate_star($reg_output);
 		}
 		return $star;
