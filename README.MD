@@ -15,7 +15,7 @@ git clone https://github.com/rmcgirr83/annualstar.git ext/rmcgirr83/annualstar/
 ```
 
 ### 2. activate
-Go to admin panel -> tab customise -> Manage extensions -> enable Annual Stars
+Go to admin panel -> tab customise -> Manage extensions -> enable Annual Star
 
 
 ## Update instructions:
