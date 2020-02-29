@@ -48,8 +48,8 @@ services:
   - mysql
 
 before_install:
-  - chmod +x prepare-epv.sh
-  - chmod +x prepare-phpbb.sh
+  - chmod +x travis/prepare-epv.sh
+  - chmod +x travis/prepare-phpbb.sh
 
 install:
   - travis/prepare-phpbb.sh $PHPBB_BRANCH
