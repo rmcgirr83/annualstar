@@ -54,7 +54,7 @@ class listener implements EventSubscriberInterface
 	{
 		$array = $event['user_cache_data'];
 		$star = '';
-		$array['annual_stars'] = $star;
+		$array['annual_star'] = $star;
 		$event['user_cache_data'] = $array;
 	}
 
