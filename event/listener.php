@@ -103,21 +103,21 @@ class listener implements EventSubscriberInterface
 	private function generate_star($reg_output)
 	{
 		/* change below to whatever colors you want */
-		$star_color = 'style="color:#AFEEEE;"';
+		$star_color = 'style="color:#AFEEEE;cursor: pointer;"';
 		$year_color = 'style="color:black;"';
 		if ($this->reg_years >= 20)
 		{
-			$star_color = 'style="color:#27408B;"';
+			$star_color = 'style="color:#27408B;cursor: pointer;"';
 			$year_color = 'style="color:white;"';
 		}
 		else if ($this->reg_years >= 10)
 		{
-			$star_color = 'style="color:#3A5FCD;"';
+			$star_color = 'style="color:#3A5FCD;cursor: pointer;"';
 			$year_color = 'style="color:white;"';
 		}
 		else if ($this->reg_years >= 5)
 		{
-			$star_color = 'style="color:#4876FF;"';
+			$star_color = 'style="color:#4876FF;cursor: pointer;"';
 			$year_color = 'style="color:white;"';
 		}
 		return '<span class="fa-stack fa-lg annual_star" ' . $star_color . ' title="'  . $reg_output .  '">
