@@ -2,8 +2,7 @@ services:
     rmcgirr83.annualstar.listener:
         class: rmcgirr83\annualstar\event\listener
         arguments:
+            - '@language'
             - '@template'
-            - '@user'
         tags:
             - { name: event.listener }
- 

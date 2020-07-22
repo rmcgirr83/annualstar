@@ -1,3 +1,3 @@
-<!-- IF ANNUAL_STAR -->
-	<dt>{L_LENGTH_OF_MEMBERSHIP}{L_COLON}</dt> <dd class="annual_star">{ANNUAL_STAR}</dd>
-<!-- ENDIF -->
+{% if ANNUAL_STAR %}
+	<dt>{{ lang('LENGTH_OF_MEMBERSHIP') }}{{ lang('COLON') }}</dt> <dd class="annual_star">{{ ANNUAL_STAR }}</dd>
+{% endif %}

@@ -1,9 +1,7 @@
 <?php
 /**
 *
-* Annual Star [English]
-*
-* @package language
+* @package Annual Star
 * @copyright (c) 2020 Richard McGirr
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -11,22 +9,43 @@
 
 namespace rmcgirr83\annualstar\event;
 
+use phpbb\language\language;
+use phpbb\template\template;
+
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
 /**
 * Event listener
 */
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
 class listener implements EventSubscriberInterface
 {
-	private $reg_years = 0;
+	/** @var language */
+	protected $language;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\user */
-	protected $user;
+	/**
+	* Constructor
+	* NOTE: The parameters of this method must match in order and type with
+	* the dependencies defined in the services.yml file for this service.
+	*
+	* @param language	$language	Language object
+	* @param template	$template	Template object
+	*/
+	public function __construct(language $language, template $template)
+	{
+		$this->language = $language;
+		$this->template = $template;
+	}
 
-
+	/**
+	* Assign functions defined in this class to event listeners in the core
+	*
+	* @return array
+	* @static
+	* @access public
+	*/
 	static public function getSubscribedEvents()
 	{
 		return array(
@@ -38,18 +57,12 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	* Constructor
-	* NOTE: The parameters of this method must match in order and type with
-	* the dependencies defined in the services.yml file for this service.
+	* Add entry to guest cache data
 	*
-	* @param \phpbb\user	$user		User object
+	* @param object $event The event object
+	* @return null
+	* @access public
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user)
-	{
-		$this->template = $template;
-		$this->user = $user;
-	}
-
 	public function viewtopic_cache_guest_data($event)
 	{
 		$array = $event['user_cache_data'];
@@ -58,6 +71,13 @@ class listener implements EventSubscriberInterface
 		$event['user_cache_data'] = $array;
 	}
 
+	/**
+	* Add entry to user cache data
+	*
+	* @param object $event The event object
+	* @return null
+	* @access public
+	*/
 	public function viewtopic_cache_user_data($event)
 	{
 		$array = $event['user_cache_data'];
@@ -65,6 +85,13 @@ class listener implements EventSubscriberInterface
 		$event['user_cache_data'] = $array;
 	}
 
+	/**
+	* Modify the post row in viewtopic
+	*
+	* @param object $event The event object
+	* @return null
+	* @access public
+	*/
 	public function viewtopic_modify_post_row($event)
 	{
 		$event['post_row'] = array_merge($event['post_row'], array('ANNUAL_STAR' => $event['user_poster_data']['annual_star']));
@@ -73,6 +100,13 @@ class listener implements EventSubscriberInterface
 		$event['post_row'] = !empty($event['user_poster_data']['annual_star']) ? array_merge($event['post_row'], array('POSTER_JOINED' => '')) : array_merge($event['post_row'], array('POSTER_JOINED' => $joined));*/
 	}
 
+	/**
+	* Add star to member profile
+	*
+	* @param object $event The event object
+	* @return null
+	* @access public
+	*/
 	public function memberlist_view_profile($event)
 	{
 		$star = $this->annual_star($event['member']['user_regdate']);
@@ -82,47 +116,70 @@ class listener implements EventSubscriberInterface
 		));
 	}
 
+	/**
+	* Display a users annual star
+	*
+	* @param 	int 	$reg_date 	The users registration date
+	* @return	string
+	* @access	public
+	*/
 	private function annual_star($reg_date)
 	{
-		$this->user->add_lang_ext('rmcgirr83/annualstar', 'annualstar');
+		$this->language->add_lang('annualstar', 'rmcgirr83/annualstar');
 		$star = '';
 		if ($reg_years = (int) ((time() - (int) $reg_date) / 31536000))
 		{
-			$this->reg_years = $reg_years;
-			$reg_output = sprintf($this->user->lang['YEAR_OF_MEMBERSHIP'], $reg_years);
+			$reg_output = $this->language->lang('YEAR_OF_MEMBERSHIP', $reg_years);
 
-			if ($reg_years > 1)
-			{
-				$reg_output = sprintf($this->user->lang['YEARS_OF_MEMBERSHIP'], $reg_years);
-			}
-			$star = $this->generate_star($reg_output);
+			//this generates the actual display of the star
+			$star = $this->generate_star($reg_output, $reg_years);
 		}
 		return $star;
 	}
 
-	private function generate_star($reg_output)
+	/**
+	* Generate display of the star
+	*
+	* @param	int 	$reg_output 	The users registration date
+	* @return	string
+	* @access	public
+	*/
+	private function generate_star($reg_output = '', $reg_years = 0)
 	{
-		/* change below to whatever colors you want */
-		$star_color = 'style="color:#AFEEEE;cursor: pointer;"';
-		$year_color = 'style="color:black;"';
-		if ($this->reg_years >= 20)
+		/*
+		* change below to whatever colors you want
+		* star_color	the interior color of the star
+		* year_color	the color of the number that displays within the star
+		* lighter star_color will require darker year_color and vice versa
+		*/
+
+		// year 20 and over
+		if ($reg_years >= 20)
 		{
 			$star_color = 'style="color:#27408B;cursor: pointer;"';
 			$year_color = 'style="color:white;"';
 		}
-		else if ($this->reg_years >= 10)
+		// year 10 through 20
+		else if ($reg_years >= 10)
 		{
 			$star_color = 'style="color:#3A5FCD;cursor: pointer;"';
 			$year_color = 'style="color:white;"';
 		}
-		else if ($this->reg_years >= 5)
+		// year 5 through 10
+		else if ($reg_years >= 5)
 		{
 			$star_color = 'style="color:#4876FF;cursor: pointer;"';
 			$year_color = 'style="color:white;"';
 		}
+		//year 1 to 5
+		else if ($reg_years >= 1)
+		{
+			$star_color = 'style="color:#0076B1;cursor: pointer;"';
+			$year_color = 'style="color:white;"';
+		}
 		return '<span class="fa-stack fa-lg annual_star" ' . $star_color . ' title="'  . $reg_output .  '">
 					<i class="fa fa-star fa-stack-2x"></i>
-					<i class="fa fa-stack-1x" ' . $year_color . '>' . $this->reg_years .'</i>
+					<i class="fa fa-stack-1x" ' . $year_color . '>' . $reg_years .'</i>
 				</span>';
 	}
 }

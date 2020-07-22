@@ -4,8 +4,8 @@
 	"description": "Displays a star with number of years of membership",
 	"homepage": "https://github.com/rmcgirr83/annualstar",
 	"version": "1.0.0",
-	"time": "2020-02-29",
-	"license": "GPL-2.0",
+	"time": "2020-07-22",
+	"license": "GPL-2.0-only",
 	"authors": [
 		{
 			"name": "Rich McGirr",
