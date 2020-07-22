@@ -95,9 +95,6 @@ class listener implements EventSubscriberInterface
 	public function viewtopic_modify_post_row($event)
 	{
 		$event['post_row'] = array_merge($event['post_row'], array('ANNUAL_STAR' => $event['user_poster_data']['annual_star']));
-		/* remove joined date from viewtopic?  If so uncomment the next two lines */
-		/*$joined = $event['user_poster_data']['joined'];
-		$event['post_row'] = !empty($event['user_poster_data']['annual_star']) ? array_merge($event['post_row'], array('POSTER_JOINED' => '')) : array_merge($event['post_row'], array('POSTER_JOINED' => $joined));*/
 	}
 
 	/**
