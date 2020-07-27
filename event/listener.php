@@ -49,11 +49,30 @@ class listener implements EventSubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
+			'core.acp_extensions_run_action_after'	=>	'acp_extensions_run_action_after',
 			'core.viewtopic_cache_user_data'	=> 'viewtopic_cache_user_data',
 			'core.viewtopic_cache_guest_data'	=> 'viewtopic_cache_guest_data',
 			'core.viewtopic_modify_post_row'	=> 'viewtopic_modify_post_row',
 			'core.memberlist_view_profile'		=> 'memberlist_view_profile',
 		);
+	}
+
+	/* Display additional metdate in extension details
+	*
+	* @param $event			event object
+	* @param return null
+	* @access public
+	*/
+	public function acp_extensions_run_action_after($event)
+	{
+		if ($event['ext_name'] == 'rmcgirr83/annualstar' && $event['action'] == 'details')
+		{
+			$this->language->add_lang('annualstar', $event['ext_name']);
+			$this->template->assign_vars([
+				'L_BUY_ME_A_BEER_EXPLAIN'	=> $this->language->lang('BUY ME A BEER_EXPLAIN', '<a href="' . $this->language->lang('BUY_ME_A_BEER_URL') . '" target="_blank" rel=”noreferrer noopener”>', '</a>'),
+				'S_BUY_ME_A_BEER_ANNUALSTAR' => true,
+			]);
+		}
 	}
 
 	/**
