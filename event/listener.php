@@ -185,7 +185,7 @@ class listener implements EventSubscriberInterface
 	* @return	string
 	* @access	public
 	*/
-	private function generate_star($reg_output = '', $reg_years = 0, $user_id)
+	private function generate_star($user_id, $reg_output = '', $reg_years = 0)
 	{
 		/*
 		* change below to whatever colors you want
