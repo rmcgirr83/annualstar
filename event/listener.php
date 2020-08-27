@@ -50,8 +50,8 @@ class listener implements EventSubscriberInterface
 	{
 		return array(
 			'core.acp_extensions_run_action_after'	=>	'acp_extensions_run_action_after',
-			'core.viewtopic_cache_user_data'	=> 'viewtopic_cache_user_data',
-			'core.viewtopic_cache_guest_data'	=> 'viewtopic_cache_guest_data',
+			'core.viewtopic_cache_guest_data'		=> 'viewtopic_cache_guest_data',
+			'core.viewtopic_cache_user_data'		=> 'viewtopic_cache_user_data',
 			'core.viewtopic_modify_post_row'	=> 'viewtopic_modify_post_row',
 			'core.memberlist_view_profile'		=> 'memberlist_view_profile',
 		);
@@ -68,15 +68,12 @@ class listener implements EventSubscriberInterface
 		if ($event['ext_name'] == 'rmcgirr83/annualstar' && $event['action'] == 'details')
 		{
 			$this->language->add_lang('annualstar', $event['ext_name']);
-			$this->template->assign_vars([
-				'L_BUY_ME_A_BEER_EXPLAIN'	=> $this->language->lang('BUY ME A BEER_EXPLAIN', '<a href="' . $this->language->lang('BUY_ME_A_BEER_URL') . '" target="_blank" rel=”noreferrer noopener”>', '</a>'),
-				'S_BUY_ME_A_BEER_ANNUALSTAR' => true,
-			]);
+			$this->template->assign_var('S_BUY_ME_A_BEER_ANNUALSTAR', true);
 		}
 	}
 
 	/**
-	* Add entry to guest cache data
+	* Update viewtopic guest data
 	*
 	* @param object $event The event object
 	* @return null
@@ -85,13 +82,12 @@ class listener implements EventSubscriberInterface
 	public function viewtopic_cache_guest_data($event)
 	{
 		$array = $event['user_cache_data'];
-		$star = '';
-		$array['annual_star'] = $star;
+		$array['user_regdate'] = '';
 		$event['user_cache_data'] = $array;
 	}
 
 	/**
-	* Add entry to user cache data
+	* Update viewtopic user data
 	*
 	* @param object $event The event object
 	* @return null
@@ -100,7 +96,7 @@ class listener implements EventSubscriberInterface
 	public function viewtopic_cache_user_data($event)
 	{
 		$array = $event['user_cache_data'];
-		$array['annual_star'] = $this->annual_star($event['row']['user_regdate']);
+		$array['user_regdate'] = $event['row']['user_regdate'];
 		$event['user_cache_data'] = $array;
 	}
 
@@ -113,7 +109,24 @@ class listener implements EventSubscriberInterface
 	*/
 	public function viewtopic_modify_post_row($event)
 	{
-		$event['post_row'] = array_merge($event['post_row'], array('ANNUAL_STAR' => $event['user_poster_data']['annual_star']));
+		$reg_date = $event['user_poster_data']['user_regdate'];
+		$poster_id = $event['poster_id'];
+		$user_type = $event['user_poster_data']['user_type'];
+
+		if ($user_type != USER_IGNORE && !empty($reg_date))
+		{
+			$star_css = $this->annual_star($reg_date, $poster_id);
+
+			if (!empty($star_css))
+			{
+				$event['post_row'] = array_merge($event['post_row'], [
+					'STAR_COLOR' => $star_css[$poster_id]['star_color'],
+					'YEAR_COLOR' => $star_css[$poster_id]['year_color'],
+					'REG_OUTPUT' => $star_css[$poster_id]['reg_output'],
+					'REG_YEARS' => $star_css[$poster_id]['reg_years']
+				]);
+			}
+		}
 	}
 
 	/**
@@ -125,11 +138,20 @@ class listener implements EventSubscriberInterface
 	*/
 	public function memberlist_view_profile($event)
 	{
-		$star = $this->annual_star($event['member']['user_regdate']);
+		$reg_date = $event['member']['user_regdate'];
+		$user_id = $event['member']['user_id'];
 
-		$this->template->assign_vars(array(
-			'ANNUAL_STAR'	=> $star,
-		));
+		$star_css = $this->annual_star($reg_date, $user_id);
+
+		if (!empty($star_css))
+		{
+			$this->template->assign_vars([
+				'STAR_COLOR' => $star_css[$user_id]['star_color'],
+				'YEAR_COLOR' => $star_css[$user_id]['year_color'],
+				'REG_OUTPUT' => $star_css[$user_id]['reg_output'],
+				'REG_YEARS' => $star_css[$user_id]['reg_years']
+			]);
+		}
 	}
 
 	/**
@@ -139,16 +161,19 @@ class listener implements EventSubscriberInterface
 	* @return	string
 	* @access	public
 	*/
-	private function annual_star($reg_date)
+	private function annual_star($reg_date, $user_id)
 	{
 		$this->language->add_lang('annualstar', 'rmcgirr83/annualstar');
 		$star = '';
 		if ($reg_years = (int) ((time() - (int) $reg_date) / 31536000))
 		{
-			$reg_output = $this->language->lang('YEAR_OF_MEMBERSHIP', $reg_years);
+			if ($reg_years >= 1)
+			{
+				$reg_output = $this->language->lang('YEAR_OF_MEMBERSHIP', $reg_years);
 
-			//this generates the actual display of the star
-			$star = $this->generate_star($reg_output, $reg_years);
+				//this gets the css for the star
+				$star = $this->generate_star($reg_output, $reg_years, $user_id);
+			}
 		}
 		return $star;
 	}
@@ -160,7 +185,7 @@ class listener implements EventSubscriberInterface
 	* @return	string
 	* @access	public
 	*/
-	private function generate_star($reg_output = '', $reg_years = 0)
+	private function generate_star($reg_output = '', $reg_years = 0, $user_id)
 	{
 		/*
 		* change below to whatever colors you want
@@ -172,30 +197,34 @@ class listener implements EventSubscriberInterface
 		// year 20 and over
 		if ($reg_years >= 20)
 		{
-			$star_color = 'style="color:#27408B;cursor: pointer;"';
-			$year_color = 'style="color:white;"';
+			$css_array = [
+				'star_color' => 'style="color:#27408B;cursor: pointer;"',
+				'year_color' => 'style="color:white;"'];
 		}
 		// year 10 through 20
 		else if ($reg_years >= 10)
 		{
-			$star_color = 'style="color:#3A5FCD;cursor: pointer;"';
-			$year_color = 'style="color:white;"';
+			$css_array = [
+				'star_color' => 'style="color:#3A5FCD;cursor: pointer;"',
+				'year_color' => 'style="color:white;"'];
 		}
 		// year 5 through 10
 		else if ($reg_years >= 5)
 		{
-			$star_color = 'style="color:#4876FF;cursor: pointer;"';
-			$year_color = 'style="color:white;"';
+			$css_array = [
+				'star_color' => 'style="color:#4876FF;cursor: pointer;"',
+				'year_color' => 'style="color:white;"'];
 		}
 		//year 1 to 5
 		else if ($reg_years >= 1)
 		{
-			$star_color = 'style="color:#0076B1;cursor: pointer;"';
-			$year_color = 'style="color:white;"';
+			$css_array = [
+				'star_color' => 'style="color:#0076B1;cursor: pointer;"',
+				'year_color' => 'style="color:white;"'];
 		}
-		return '<span class="fa-stack fa-lg annual_star" ' . $star_color . ' title="'  . $reg_output .  '">
-					<i class="fa fa-star fa-stack-2x"></i>
-					<i class="fa fa-stack-1x" ' . $year_color . '>' . $reg_years .'</i>
-				</span>';
+
+		$css_array[$user_id] = array_merge($css_array, ['reg_output' => $reg_output, 'reg_years' => $reg_years]);
+
+		return $css_array;
 	}
 }

@@ -1,3 +1,8 @@
-{% if postrow.ANNUAL_STAR %}
-	<dd class="profile-annualstar">{{ postrow.ANNUAL_STAR }}</dd>
+{% if postrow.STAR_COLOR %}
+	<dd class="profile-annualstar">
+		<span class="fa-stack fa-lg annual_star" {{ postrow.STAR_COLOR }} title="{{ postrow.REG_OUTPUT }}">
+			<i class="fa fa-star fa-stack-2x"></i>
+			<i class="fa fa-stack-1x" {{ postrow.YEAR_COLOR }}>{{ postrow.REG_YEARS }}</i>
+		</span>
+	</dd>
 {% endif %}

@@ -1,3 +1,9 @@
-{% if ANNUAL_STAR %}
-	<dt>{{ lang('LENGTH_OF_MEMBERSHIP') }}{{ lang('COLON') }}</dt> <dd class="annual_star">{{ ANNUAL_STAR }}</dd>
+{% if STAR_COLOR %}
+	<dt>{{ lang('LENGTH_OF_MEMBERSHIP') }}{{ lang('COLON') }}</dt>
+	<dd class="annual_star">
+		<span class="fa-stack fa-lg annual_star" {{ STAR_COLOR }} title="{{ REG_OUTPUT }}">
+			<i class="fa fa-star fa-stack-2x"></i>
+			<i class="fa fa-stack-1x" {{ YEAR_COLOR }}>{{ REG_YEARS }}</i>
+		</span>
+	</dd>
 {% endif %}
