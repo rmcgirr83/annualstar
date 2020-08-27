@@ -115,7 +115,7 @@ class listener implements EventSubscriberInterface
 
 		if ($user_type != USER_IGNORE && !empty($reg_date))
 		{
-			$star_css = $this->annual_star($reg_date, $poster_id);
+			$star_css = $this->annual_star($poster_id, $reg_date);
 
 			if (!empty($star_css))
 			{
@@ -141,7 +141,7 @@ class listener implements EventSubscriberInterface
 		$reg_date = $event['member']['user_regdate'];
 		$user_id = $event['member']['user_id'];
 
-		$star_css = $this->annual_star($reg_date, $user_id);
+		$star_css = $this->annual_star($user_id, $reg_date);
 
 		if (!empty($star_css))
 		{
@@ -161,7 +161,7 @@ class listener implements EventSubscriberInterface
 	* @return	string
 	* @access	public
 	*/
-	private function annual_star($reg_date, $user_id)
+	private function annual_star($user_id, $reg_date)
 	{
 		$this->language->add_lang('annualstar', 'rmcgirr83/annualstar');
 		$star = '';
@@ -172,7 +172,7 @@ class listener implements EventSubscriberInterface
 				$reg_output = $this->language->lang('YEAR_OF_MEMBERSHIP', $reg_years);
 
 				//this gets the css for the star
-				$star = $this->generate_star($reg_output, $reg_years, $user_id);
+				$star = $this->generate_star($user_id, $reg_output, $reg_years);
 			}
 		}
 		return $star;
