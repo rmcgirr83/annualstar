@@ -3,7 +3,6 @@ Annual Star
 
 phpBB extension that displays a star with the number of years of membership
 
-[![Build Status](https://travis-ci.com/rmcgirr83/annualstar.svg?branch=master)](https://travis-ci.com/rmcgirr83/annualstar)
 ## Installation
 
 ### 1. clone
