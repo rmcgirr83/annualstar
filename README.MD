@@ -1,7 +1,8 @@
-Annual Star
-=========================
+# ![Annual Star](https://imattpro.github.io/logo/search.png "Annual Star") Annual Star for phpBB3
 
 phpBB extension that displays a star with the number of years of membership
+
+[![Build Status](https://github.com/rmcgirr83/annualstar/workflows/Tests/badge.svg)](https://github.com/rmcgirr83/annualstar/actions)
 
 ## Installation
 
